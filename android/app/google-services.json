@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "882170114581",
+    "project_id": "remote-sethoscope",
+    "storage_bucket": "remote-sethoscope.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882170114581:android:2d379e66affe601e22d41c",
+        "android_client_info": {
+          "package_name": "com.example.teen_hacks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882170114581-dcbsjtg4b08if05m31irasro65t2q8h1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.teen_hacks",
+            "certificate_hash": "27bc3e893d8d0db06c918fffb899703da5ef5592"
+          }
+        },
+        {
+          "client_id": "882170114581-vq4gafk3gr4temcsvfojj65g2ijjf5gk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkStjUTU1L4-VFsFkom_vphNTXLsfW0mg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882170114581-vq4gafk3gr4temcsvfojj65g2ijjf5gk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
