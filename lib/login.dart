@@ -316,17 +316,17 @@ class _LoginState extends State<Login> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87)),
                       )),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: Text('Please login to continue',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Color(4288914861))),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.bottomLeft,
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.only(right: 5),
+                  //     child: Text('Please login to continue',
+                  //         style: GoogleFonts.poppins(
+                  //             fontWeight: FontWeight.bold,
+                  //             fontSize: 15,
+                  //             color: Color(4288914861))),
+                  //   ),
+                  // ),
                   SizedBox(height: 50),
                   Align(
                     alignment: Alignment.bottomLeft,
@@ -416,7 +416,7 @@ class _LoginState extends State<Login> {
                               color: Colors.blue,
                             ),
                           ),
-                          obscureText: false,
+                          obscureText: true,
                         ),
                       ),
                     ),
@@ -435,11 +435,11 @@ class _LoginState extends State<Login> {
                         auth
                             .signInWithEmailAndPassword(
                                 email: _username.text, password: _password.text)
-                            .then((value) => Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => Home(value.user.uid)),
-                                (route) => false));
+                            .then((value) => Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) => Home(value.user.uid)),
+                                ));
                       } catch (e) {
                         print(e);
                       }
@@ -461,12 +461,11 @@ class _LoginState extends State<Login> {
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                               colors: [Colors.blue, Colors.lightBlueAccent])),
-                      child: Text(
-                        'Login',
-                         style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20,
-                                      color: Colors.white)),
+                      child: Text('Login',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 20,
+                              color: Colors.white)),
                     ),
                   ),
                   SizedBox(height: height * .055),

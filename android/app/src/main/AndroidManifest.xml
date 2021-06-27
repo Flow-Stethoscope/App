@@ -8,6 +8,7 @@
    <application
         tools:replace="android:label"
         android:label="teen_hacks"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

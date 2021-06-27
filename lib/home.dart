@@ -1,10 +1,15 @@
 // @dart=2.9
 
+import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:fade/fade.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -18,6 +23,8 @@ import 'package:teen_hacks/profile.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:file/local.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class Home extends StatefulWidget {
   String uid;
@@ -71,7 +78,7 @@ class _HomeState extends State<Home> {
     var _selectedTab;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(4280118015),
+        backgroundColor: Colors.lightBlue,
         body: Stack(alignment: Alignment.bottomCenter, children: [
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
@@ -90,7 +97,7 @@ class _HomeState extends State<Home> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "Hello There ,",
+                              "Home",
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                   fontSize: 26,
@@ -103,7 +110,8 @@ class _HomeState extends State<Home> {
                             name ?? "",
                             textAlign: TextAlign.start,
                             style: TextStyle(
-                                fontSize: 26,
+                              fontStyle: FontStyle.italic,
+                                fontSize: 18,
                                 color: Color(4294507261),
                                 fontWeight: FontWeight.w500),
                           ),
@@ -613,7 +621,7 @@ class _HomeState extends State<Home> {
                                                                         child: Center(
                                                                           child:
                                                                               Icon(
-                                                                            Icons.play_circle,
+                                                                            Icons.edit_rounded,
                                                                             size:
                                                                                 25,
                                                                             color:
@@ -1010,11 +1018,32 @@ class _HomeState extends State<Home> {
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (c) =>
-                                  CheckBeat(widget.uid, _localPath)));
+                      showDialog(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoAlertDialog(
+                            title: Text(
+                                "Would you like to record or upload a recording?"),
+                            actions: [
+                              CupertinoDialogAction(
+                                onPressed: () => {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (c) =>
+                                              CheckBeat(widget.uid, _localPath)))
+                                },
+                                child: Text(
+                                  "Record",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              CupertinoDialogAction(
+                                  child: Text("Upload"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    upload();
+                                  })
+                            ]));
                     },
                     child: new ClipRRect(
                       borderRadius: BorderRadius.only(
@@ -1062,4 +1091,43 @@ class _HomeState extends State<Home> {
   }
 
   LocalFileSystem _localPath;
+  void upload() => openFile();
+
+  uploadFile(File file) async {
+    Dio dio = new Dio();
+    var response = await dio.post("http://flow-live.tech/send_recording",
+        data: FormData.fromMap({
+          'file':
+              MultipartFile.fromFileSync(file.path, filename: file.toString()),
+        }));
+    print("Classification: " + response.toString());
+    final ref =
+        FirebaseStorage.instance.ref().child('${DateTime.now()}recording');
+    await ref.putFile(file).onComplete;
+    String imgurl = await ref.getDownloadURL();
+    print("Image URL: " + imgurl);
+    await Firestore.instance
+        .collection("patient")
+        .document(widget.uid)
+        .collection("recordings")
+        .add({
+      "result": response.toString(),
+      "file_url": imgurl,
+      "name": name,
+      "age": age,
+      "order_Check": DateTime.now(),
+      "profile_pic": profile_pic,
+      "date": DateFormat("yyyy/MM/dd ").format(DateTime.now()).toString()
+    });
+  }
+
+  openFile() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      uploadFile(File(result.files.single.path));
+    } else {
+      // User canceled the picker
+    }
+  } 
 }
