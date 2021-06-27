@@ -3,9 +3,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file/local.dart';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:intl/intl.dart';
 
@@ -51,18 +54,14 @@ class _CheckBeatState extends State<CheckBeat> {
 
           setState(() {
             timer.cancel();
-            // Navigator.pop(context);
           });
-          // _pause().then(() {
-          //   _stop().then(() {
-          //     onPlayAudio();
-          //   });
-          // });
+
           _pause();
           _stop();
           Future.delayed(Duration(seconds: 1), () {
-            onPlayAudio();
+            send_data();
           });
+
         }
       } else {
         if (mounted) {
@@ -76,29 +75,104 @@ class _CheckBeatState extends State<CheckBeat> {
 
   void onPlayAudio() async {
     AudioPlayer audioPlayer = AudioPlayer();
-    await audioPlayer.play(_current.path, isLocal: true);
+    await audioPlayer.play(file.path, isLocal: true);
   }
+
+  getuserType() async {
+    await Firestore.instance
+        .collection("users")
+        .document(widget.uid)
+        .get()
+        .then((value) {
+      setState(() {
+        userType = value["userType"];
+        print(userType);
+        Firestore.instance
+            .collection(userType)
+            .document(widget.uid)
+            .get()
+            .then((value) {
+          setState(() {
+            name = value["name"];
+            age = value["age"];
+            profile_pic = value["profile_pic"];
+
+            print("name");
+            print("profile_pic");
+          });
+        });
+      });
+    });
+  }
+
+  String name;
+  String age;
+  String userType;
+  String profile_pic;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getuserType();
     _init();
     Future.delayed(Duration(seconds: 1), () {
       timer();
     });
   }
 
+  send_data() async {
+    Dio dio = new Dio();
+    var response = await dio.post("http://flow-live.tech/send_recording",
+        data: FormData.fromMap({
+          'file': MultipartFile.fromFileSync(_current.path,
+              filename: DateTime.now().toString()),
+        }));
+    print("Classification: " + response.toString());
+    uploadToFirebase(response);
+  }
+
+  uploadToFirebase(response) async {
+    final ref =
+        FirebaseStorage.instance.ref().child('${DateTime.now()}recording');
+    File recording = new File(_current.path);
+    await ref.putFile(recording).onComplete;
+    String imgurl = await ref.getDownloadURL();
+    print("Image URL: " + imgurl);
+    final Map parsed = json.decode(response.toString());
+    print(
+      parsed["classifications"],
+    );
+    await Firestore.instance
+        .collection("patient")
+        .document(widget.uid)
+        .collection("recordings")
+        .add({
+      "result": parsed["classifications"],
+      "file_url": imgurl,
+      "name": name,
+      "age": age,
+      "order_Check":DateTime.now(),
+      "profile_pic": profile_pic,
+      "date": DateFormat("yyyy/MM/dd ").format(DateTime.now()).toString()
+    });
+    Navigator.pop(context);
+  }
+
+  io.File file;
   _stop() async {
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
-    io.File file = widget.localFileSystem.file(result.path);
+    setState(() {
+      file = widget.localFileSystem.file(result.path);
+    });
     print("File length: ${await file.length()}");
     setState(() {
       _current = result;
       _currentStatus = _current.status;
     });
+    print(file);
   }
 
   _pause() async {
@@ -222,28 +296,34 @@ class _CheckBeatState extends State<CheckBeat> {
                 ),
               ),
               SizedBox(height: 60),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                      // time_left.toString()
-
-                      timeLeft.toString(),
-                      style: TextStyle(
-                          fontSize: 60,
+              timeLeft == 0
+                  ? Text("Analyzing...",
+                      style: GoogleFonts.poppins(
+                          fontSize: 34,
                           color: Color(4284903812),
-                          fontWeight: FontWeight.w500)),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 5),
-                    child: Text("sec",
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: Color(4291874251),
-                            fontWeight: FontWeight.w500)),
-                  )
-                ],
-              ),
+                          fontWeight: FontWeight.w500))
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            // time_left.toString()
+
+                            timeLeft.toString(),
+                            style: TextStyle(
+                                fontSize: 60,
+                                color: Color(4284903812),
+                                fontWeight: FontWeight.w500)),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4, left: 5),
+                          child: Text(timeLeft == 0 ? "" : "sec",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Color(4291874251),
+                                  fontWeight: FontWeight.w500)),
+                        )
+                      ],
+                    ),
               SizedBox(height: 40),
               GestureDetector(
                 onTap: () {

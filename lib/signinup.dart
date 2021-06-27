@@ -22,6 +22,7 @@ class _SignupState extends State<Signup> {
   TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _userType = TextEditingController();
+  TextEditingController _phone = TextEditingController();
 
   FirebaseAuth auth = FirebaseAuth.instance;
   ImagePicker picker = ImagePicker();
@@ -281,6 +282,44 @@ class _SignupState extends State<Signup> {
                         Align(
                             alignment: Alignment.bottomLeft,
                             child: Text(
+                              'Phone Number',
+                              style: GoogleFonts.poppins(
+                                  color: Color(4288914861), fontSize: 18),
+                            )),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Material(
+                          elevation: 3,
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: TextFormField(
+                              controller: _phone,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                contentPadding: EdgeInsets.only(top: 14.0),
+                                prefixIcon: Icon(
+                                  Icons.phone,
+                                  color: Color(4288914861),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
                               'Profile Photo',
                               style: TextStyle(
                                   color: Color(4288914861), fontSize: 18),
@@ -359,8 +398,7 @@ class _SignupState extends State<Signup> {
                                         .setData({
                                         "age": _age.text,
                                         "profile_pic": imgurl,
-                                        "doctors_liked": [],
-                                        "recordings": [],
+                                        "phone": _phone.text,
                                         "name": _name.text,
                                         "userType": _userType.text.toLowerCase()
                                       })
@@ -370,8 +408,8 @@ class _SignupState extends State<Signup> {
                                         .setData({
                                         "age": _age.text,
                                         "profile_pic": imgurl,
-                                        "recordings": [],
                                         "name": _name.text,
+                                        "phone": _phone.text,
                                         "userType": _userType.text.toLowerCase()
                                       });
                                 print("Done Cool");

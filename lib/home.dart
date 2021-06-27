@@ -1,5 +1,6 @@
 // @dart=2.9
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
@@ -16,6 +17,7 @@ import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:teen_hacks/profile.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:file/local.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   String uid;
@@ -42,6 +44,7 @@ class _HomeState extends State<Home> {
             .then((value) {
           setState(() {
             name = value["name"];
+            age = value["age"];
             profile_pic = value["profile_pic"];
 
             print("name");
@@ -52,15 +55,13 @@ class _HomeState extends State<Home> {
     });
   }
 
-  getuserInfo() async {}
-
   String name;
+  String age;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getuserType();
-    getuserInfo();
   }
 
   String userType;
@@ -123,13 +124,12 @@ class _HomeState extends State<Home> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   image: DecorationImage(
-                                      image: NetworkImage(profile_pic ??
-                                          "https://thumbs.dreamstime.com/b/portrait-positive-black-doctor-holding-medical-chart-male-over-white-background-178499631.jpg"),
-                                      fit: BoxFit.cover))),
+                                    fit: BoxFit.cover,
+                                      image: NetworkImage(profile_pic==null?"":profile_pic),)))
                         ),
                       )
                     ]),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 // Row(
                 //   children: [
                 //     Align(
@@ -140,61 +140,242 @@ class _HomeState extends State<Home> {
                 //     ),
                 //   ],
                 //)
-                Row(
-                  children: [
-                    Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.3),
-                        ),
-                        child: Icon(Icons.search, color: Colors.white)),
-                    SizedBox(width: 0),
-                    Container(
-                      width: MediaQuery.of(context).size.width - 85,
-                      height: 80,
-                      child: userType==null?Container(): StreamBuilder(
-                          stream: Firestore.instance
-                              .collection("doctor")
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            return snapshot.data == null
+                userType == "doctor"
+                    ? Container()
+                    : Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              showBarModalBottomSheet(
+                                  backgroundColor: Colors.white,
+                                  context: context,
+                                  builder: (context) {
+                                    return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 15.0, right: 15),
+                                            child: Text(
+                                              "Look For Doctors To Add",
+                                              style: TextStyle(
+                                                  fontSize: 23,
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 15.0, right: 15),
+                                            child: StreamBuilder(
+                                                stream: Firestore.instance
+                                                    .collection("doctor")
+                                                    .snapshots(),
+                                                builder: (context, snap) {
+                                                  return snap.data == null
+                                                      ? Container()
+                                                      : ListView.separated(
+                                                          physics:
+                                                              NeverScrollableScrollPhysics(),
+                                                          separatorBuilder:
+                                                              (ctx, i) {
+                                                            return SizedBox(
+                                                                height: 20);
+                                                          },
+                                                          itemCount: snap.data
+                                                              .documents.length,
+                                                          shrinkWrap: true,
+                                                          itemBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  int i) {
+                                                            var doctors = snap
+                                                                .data
+                                                                .documents[i]
+                                                                .data;
+                                                            return Container(
+                                                                width: double
+                                                                    .infinity,
+                                                                height: 100,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  // boxShadow: [
+                                                                  //   BoxShadow(
+                                                                  //     color: Colors.black.withOpacity(0.1),
+                                                                  //     spreadRadius: 0.3,
+                                                                  //     blurRadius: 10,
+                                                                  //     offset: Offset(0, 3), // changes position of shadow
+                                                                  //   ),
+                                                                  // ],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15),
+                                                                  color: Colors
+                                                                      .lightBlue
+                                                                      .withOpacity(
+                                                                          0.2),
+                                                                ),
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      left: 8.0,
+                                                                      right: 8),
+                                                                  child: Center(
+                                                                    child: Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Container(
+                                                                          width:
+                                                                              80,
+
+                                                                          height:
+                                                                              80,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.grey.withOpacity(0.2),
+                                                                            image:
+                                                                                DecorationImage(fit: BoxFit.cover, image: NetworkImage(doctors["profile_pic"])),
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(10),
+                                                                          ),
+                                                                          // child:
+                                                                          //   Image.network(name),
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                10),
+                                                                        Column(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            SizedBox(height: 16),
+                                                                            Text(
+                                                                              doctors["name"],
+                                                                              style: TextStyle(fontSize: 21, color: Colors.blue),
+                                                                            ),
+                                                                            SizedBox(height: 5),
+                                                                            GestureDetector(
+                                                                              onTap: () async {
+                                                                                Firestore.instance.collection("patient").document(widget.uid).collection("doctors_liked").add({
+                                                                                  "age": doctors["age"],
+                                                                                  "doctor_uid": snap.data.documents[i].documentID,
+                                                                                  "profile_pic": doctors["profile_pic"],
+                                                                                  "name": doctors["name"]
+                                                                                });
+                                                                                Navigator.pop(context);
+                                                                                //                                                                                                           var dio=Dio();
+                                                                                //                                                                                                           var send_messgae={"url":user["recordings"][index]["url"]}
+                                                                                //  await dio.post("https://flow-live.tech/user/send_recording",
+                                                                                //               data: FormData.fromMap(send_messgae));
+                                                                                showDialog(
+                                                                                    context: context,
+                                                                                    builder: (context) {
+                                                                                      Future.delayed(Duration(seconds: 3), () {
+                                                                                        Navigator.of(context).pop(true);
+                                                                                      });
+                                                                                      return Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: Colors.grey[900], child: Container(width: 200, height: 130, child: Lottie.asset("assets/tick.json", repeat: false)));
+                                                                                    });
+                                                                              },
+                                                                              child: Container(
+                                                                                  width: MediaQuery.of(context).size.width - 136,
+                                                                                  height: 30,
+                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), gradient: LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent])),
+                                                                                  child: Center(
+                                                                                    child: Text(
+                                                                                      "Add",
+                                                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 17),
+                                                                                    ),
+                                                                                  )),
+                                                                            ),
+                                                                          ],
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ));
+                                                          },
+                                                        );
+                                                }),
+                                          )
+                                        ]);
+                                  });
+                            },
+                            child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                                child: Icon(Icons.add, color: Colors.white)),
+                          ),
+                          SizedBox(width: 0),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 85,
+                            height: 80,
+                            child: userType == null
                                 ? Container()
-                                : ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: snapshot.data.documents.length,
-                                    itemBuilder: (ctx, i) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Container(
-                                          width: 50,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color:
-                                                  Colors.white.withOpacity(0.3),
-                                              image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: NetworkImage(snapshot
-                                                      .data
-                                                      .documents[i]
-                                                      .data["profile_pic"]))),
-                                        ),
-                                      );
-                                    });
-                          }),
-                    ),
-                  ],
-                ),
+                                : StreamBuilder(
+                                    stream: Firestore.instance
+                                        .collection("patient")
+                                        .document(widget.uid)
+                                        .collection("doctors_liked")
+                                        .snapshots(),
+                                    builder: (context, snapshot) {
+                                      return snapshot.data == null
+                                          ? Container()
+                                          : ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: snapshot
+                                                  .data.documents.length,
+                                              itemBuilder: (ctx, i) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0),
+                                                  child: Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Colors.white
+                                                            .withOpacity(0.3),
+                                                        image: DecorationImage(
+                                                            fit: BoxFit.cover,
+                                                            image: NetworkImage(
+                                                                snapshot
+                                                                        .data
+                                                                        .documents[
+                                                                            i]
+                                                                        .data[
+                                                                    "profile_pic"]))),
+                                                  ),
+                                                );
+                                              });
+                                    }),
+                          ),
+                        ],
+                      ),
               ],
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: MediaQuery.of(context).size.height - 220,
+              height: MediaQuery.of(context).size.height - 250,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -208,331 +389,583 @@ class _HomeState extends State<Home> {
                   SizedBox(height: 20),
                   Container(
                     height: 475,
-                    child: userType==null?Container():StreamBuilder(
-                        stream: Firestore.instance
-                            .collection(userType)
-                            .document(widget.uid)
-                            .collection("recordings")
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          return snapshot.data == null
-                              ? Container()
-                              : ListView.builder(
-                                  physics: BouncingScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: snapshot.data.documents.length,
-                                  itemBuilder: (ctx, i) {
-                                    print(snapshot
-                                        .data.documents[i].data["name"]);
-                                    print("dwe");
-                                    var data = snapshot.data.documents[i].data;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0, bottom: 10),
-                                      child: Container(
-                                          width: double.infinity,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            // boxShadow: [
-                                            //   BoxShadow(
-                                            //     color: Colors.black.withOpacity(0.1),
-                                            //     spreadRadius: 0.7,
-                                            //     blurRadius: 20,
-                                            //     offset: Offset(
-                                            //         0, 3), // changes position of shadow
-                                            //   ),
-                                            // ],
-                                            color: Colors.lightBlue
-                                                .withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0, right: 8),
-                                            child: Center(
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    width: 70,
+                    child: userType == "doctor"
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, right: 10),
+                            child: StreamBuilder(
+                                stream: Firestore.instance
+                                    .collection(userType)
+                                    .document(widget.uid)
+                                    .collection("recordings").orderBy("order_Check",descending:true)
+                                    .snapshots(),
+                                builder: (ctx, snap) {
+                                  return ListView.separated(
+                                  
+                                    
+                                      itemCount: snap.data.documents.length,
+                                      shrinkWrap: true,
+                                      separatorBuilder: (ctx, i) {
+                                        return SizedBox(height: 10);
+                                      },
+                                      itemBuilder: (context, i) {
+                                        var data = snap.data.documents[i].data;
 
-                                                    height: 70,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white
-                                                          .withOpacity(0.6),
-                                                      image: DecorationImage(
-                                                          image: AssetImage(
-                                                              "assets/wave.png")),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                    ),
-                                                    // child:
-                                                    //   Image.network(name),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      SizedBox(height: 16),
-                                                      Text(
-                                                        data["result"],
-                                                        style: TextStyle(
-                                                            fontSize: 23,
-                                                            color: Colors.blue),
+                                        return Container(
+                                            width: double.infinity,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              // boxShadow: [
+                                              //   BoxShadow(
+                                              //     color: Colors.black.withOpacity(0.1),
+                                              //     spreadRadius: 0.7,
+                                              //     blurRadius: 20,
+                                              //     offset: Offset(
+                                              //         0, 3), // changes position of shadow
+                                              //   ),
+                                              // ],
+                                              color: Colors.lightBlue
+                                                  .withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0, right: 8),
+                                              child: Center(
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 75,
+
+                                                      height: 75,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.2),
+                                                        image: DecorationImage(
+                                                            fit: BoxFit.cover,
+                                                            image: NetworkImage(
+                                                                data[
+                                                                    "profile_pic"])),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
                                                       ),
-                                                      SizedBox(height: 8),
-                                                      Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width -
-                                                            119,
-                                                        child: Row(
+                                                      // child:
+                                                      //   Image.network(name),
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SizedBox(height: 16),
+                                                        Container(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              116,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Container(
+                                                                width:180,
+                                                                child: Expanded(
+                                                                  child: SingleChildScrollView(
+                                                                                    scrollDirection: Axis.horizontal,
+                                                                    child:  Text(
+                                                                        data[
+                                                                            "name_patient"],
+                                                                        style: GoogleFonts
+                                                                            .poppins(
+                                                                                fontSize:
+                                                                                    21,
+                                                                                color: Colors.blue),
+                                                                      ),
+                                                                    
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap:
+                                                                    () async {
+                                                                  AudioPlayer
+                                                                      audioPlayer =
+                                                                      AudioPlayer();
+                                                                  await audioPlayer.play(
+                                                                      data[
+                                                                          "file_url"],
+                                                                      isLocal:
+                                                                          true);
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        alignment:
+                                                                            Alignment
+                                                                                .center,
+                                                                        width:
+                                                                            30,
+                                                                        height:
+                                                                            30,
+                                                                        decoration: BoxDecoration(
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            border: Border.all(color: Colors.blue)),
+                                                                        child: Center(
+                                                                          child:
+                                                                              Icon(
+                                                                            Icons.play_circle,
+                                                                            size:
+                                                                                25,
+                                                                            color:
+                                                                                Colors.blue,
+                                                                          ),
+                                                                        )),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 4),
+                                                        Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
                                                                   .spaceBetween,
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
-                                                                  .start,
+                                                                  .center,
                                                           children: [
-                                                            Text(
-                                                              data["date"],
-                                                              style: TextStyle(
-                                                                  fontSize: 13,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
                                                             GestureDetector(
                                                               onTap: () {
-                                                                // showSlideDialog(
-                                                                //     barrierDismissible:
-                                                                //         true,
-                                                                //     context: context,
-                                                                //     child:
-                                                                //         ListView.separated(
-                                                                //             itemBuilder:
-                                                                //                 (ctx, i) {
-                                                                //               return Container();
-                                                                //             },
-                                                                //             separatorBuilder:
-                                                                //                 (ctx, i) =>
-                                                                //                     SizedBox(
-                                                                //                         height:
-                                                                //                             10),
-                                                                //             itemCount: 3));
-                                                                showBarModalBottomSheet(
-                                                                    backgroundColor:
-                                                                        Colors
-                                                                            .white,
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (context) {
-                                                                      return Container(
-                                                                        color: Colors
-                                                                            .white,
-                                                                        child:
-                                                                            SingleChildScrollView(
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 15.0, right: 15),
-                                                                            child:
-                                                                                Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                SizedBox(
-                                                                                  height: 20,
-                                                                                ),
-                                                                                Text(
-                                                                                  "Share it with your doctor",
-                                                                                  style: TextStyle(fontSize: 23, color: Colors.blue, fontWeight: FontWeight.w500),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  height: 20,
-                                                                                ),
-                                                                                Padding(
-                                                                                  padding: const EdgeInsets.only(
-                                                                                    bottom: 22.0,
-                                                                                  ),
-                                                                                  child:userType==null?Container(): StreamBuilder(
-                                                                                      stream: Firestore.instance.collection("patient").document(widget.uid).collection("doctors_liked").snapshots(),
-                                                                                      builder: (context, snap) {
-                                                                                        return snap.data == null
-                                                                                            ? Container()
-                                                                                            : ListView.separated(
-                                                                                                physics: NeverScrollableScrollPhysics(),
-                                                                                                separatorBuilder: (ctx, i) {
-                                                                                                  return SizedBox(height: 20);
-                                                                                                },
-                                                                                                itemCount: snap.data.documents.length,
-                                                                                                shrinkWrap: true,
-                                                                                                itemBuilder: (BuildContext context, int i) {
-                                                                                                  var doctors = snap.data.documents[i].data;
-                                                                                                  return Container(
-                                                                                                      width: double.infinity,
-                                                                                                      height: 100,
-                                                                                                      decoration: BoxDecoration(
-                                                                                                        // boxShadow: [
-                                                                                                        //   BoxShadow(
-                                                                                                        //     color: Colors.black.withOpacity(0.1),
-                                                                                                        //     spreadRadius: 0.3,
-                                                                                                        //     blurRadius: 10,
-                                                                                                        //     offset: Offset(0, 3), // changes position of shadow
-                                                                                                        //   ),
-                                                                                                        // ],
-                                                                                                        borderRadius: BorderRadius.circular(15),
-                                                                                                        color: Colors.lightBlue.withOpacity(0.2),
-                                                                                                      ),
-                                                                                                      child: Padding(
-                                                                                                        padding: const EdgeInsets.only(left: 8.0, right: 8),
-                                                                                                        child: Center(
-                                                                                                          child: Row(
-                                                                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                            children: [
-                                                                                                              Container(
-                                                                                                                width: 80,
-
-                                                                                                                height: 80,
-                                                                                                                decoration: BoxDecoration(
-                                                                                                                  color: Colors.grey.withOpacity(0.2),
-                                                                                                                  image: DecorationImage(fit: BoxFit.cover, image: NetworkImage("https://cdn8.dissolve.com/p/D9_39_166/D9_39_166_1200.jpg")),
-                                                                                                                  borderRadius: BorderRadius.circular(10),
-                                                                                                                ),
-                                                                                                                // child:
-                                                                                                                //   Image.network(name),
-                                                                                                              ),
-                                                                                                              SizedBox(width: 10),
-                                                                                                              Column(
-                                                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                                children: [
-                                                                                                                  SizedBox(height: 16),
-                                                                                                                  Text(
-                                                                                                                    doctors["name"],
-                                                                                                                    style: TextStyle(fontSize: 21, color: Colors.blue),
-                                                                                                                  ),
-                                                                                                                  SizedBox(height: 5),
-                                                                                                                  GestureDetector(
-                                                                                                                    onTap: () async {
-                                                                                                                      Navigator.pop(context);
-                                                                                                                      //                                                                                                           var dio=Dio();
-                                                                                                                      //                                                                                                           var send_messgae={"url":user["recordings"][index]["url"]}
-                                                                                                                      //  await dio.post("https://flow-live.tech/user/send_recording",
-                                                                                                                      //               data: FormData.fromMap(send_messgae));
-                                                                                                                      showDialog(
-                                                                                                                          context: context,
-                                                                                                                          builder: (context) {
-                                                                                                                            Future.delayed(Duration(seconds: 3), () {
-                                                                                                                              Navigator.of(context).pop(true);
-                                                                                                                            });
-                                                                                                                            return Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: Colors.grey[900], child: Container(width: 200, height: 130, child: Lottie.asset("assets/tick.json", repeat: false)));
-                                                                                                                          });
-                                                                                                                    },
-                                                                                                                    child: Container(
-                                                                                                                        width: MediaQuery.of(context).size.width - 136,
-                                                                                                                        height: 30,
-                                                                                                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), gradient: LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent])),
-                                                                                                                        child: Center(
-                                                                                                                          child: Text(
-                                                                                                                            "Send",
-                                                                                                                            style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 17),
-                                                                                                                          ),
-                                                                                                                        )),
-                                                                                                                  ),
-                                                                                                                ],
-                                                                                                              )
-                                                                                                            ],
-                                                                                                          ),
-                                                                                                        ),
-                                                                                                      ));
-                                                                                                },
-                                                                                              );
-                                                                                      }),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    });
+                                                                launch(
+                                                                    "tel://${data["phone"]}");
                                                               },
-                                                              child: Icon(
-                                                                Icons.share,
-                                                                color:
-                                                                    Colors.grey,
-                                                                size: 20,
+                                                              child: Container(
+                                                                  width: 160,
+                                                                  height: 29,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(6),
+                                                                    color: Colors
+                                                                        .blue,
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      "Call Patient",
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .w500,
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontSize:
+                                                                              13),
+                                                                    ),
+                                                                  )),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 17,
+                                                            ),
+                                                            Text(
+                                                              data["result"],
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: data["result"] ==
+                                                                        "Normal"
+                                                                    ? Colors
+                                                                        .green
+                                                                    : Colors
+                                                                        .red,
                                                               ),
-                                                            )
+                                                            ),
                                                           ],
                                                         ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          )),
-                                    );
-                                  });
-                        }),
+                                            ));
+                                      });
+                                }),
+                          )
+                        : userType == null
+                            ? Container()
+                            : StreamBuilder(
+                                stream: Firestore.instance
+                                    .collection(userType)
+                                    .document(widget.uid)
+                                    .collection("recordings").orderBy("order_Check",descending: true)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  return snapshot.data == null
+                                      ? Container()
+                                      : ListView.builder(
+                                          physics: BouncingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount:
+                                              snapshot.data.documents.length,
+                                          itemBuilder: (ctx, i) {
+                                            print(snapshot.data.documents[i]
+                                                .data["name"]);
+                                            print("dwe");
+                                            var data =
+                                                snapshot.data.documents[i].data;
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0,
+                                                  right: 8.0,
+                                                  bottom: 10),
+                                              child: Container(
+                                                  width: double.infinity,
+                                                  height: 100,
+                                                  decoration: BoxDecoration(
+                                                    // boxShadow: [
+                                                    //   BoxShadow(
+                                                    //     color: Colors.black.withOpacity(0.1),
+                                                    //     spreadRadius: 0.7,
+                                                    //     blurRadius: 20,
+                                                    //     offset: Offset(
+                                                    //         0, 3), // changes position of shadow
+                                                    //   ),
+                                                    // ],
+                                                    color: Colors.lightBlue
+                                                        .withOpacity(0.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8.0,
+                                                            right: 8),
+                                                    child: Center(
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Container(
+                                                            width: 70,
+
+                                                            height: 70,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors
+                                                                  .white
+                                                                  .withOpacity(
+                                                                      0.6),
+                                                              image: DecorationImage(
+                                                                  image: AssetImage(
+                                                                      "assets/wave.png")),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                            ),
+                                                            // child:
+                                                            //   Image.network(name),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              SizedBox(
+                                                                  height: 16),
+                                                              Text(
+                                                                "${data["result"]} Heartbeat",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        21,
+                                                                    color: Colors
+                                                                        .blue),
+                                                              ),
+                                                              SizedBox(
+                                                                  height: 8),
+                                                              Container(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width -
+                                                                    119,
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      data[
+                                                                          "date"],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        // showSlideDialog(
+                                                                        //     barrierDismissible:
+                                                                        //         true,
+                                                                        //     context: context,
+                                                                        //     child:
+                                                                        //         ListView.separated(
+                                                                        //             itemBuilder:
+                                                                        //                 (ctx, i) {
+                                                                        //               return Container();
+                                                                        //             },
+                                                                        //             separatorBuilder:
+                                                                        //                 (ctx, i) =>
+                                                                        //                     SizedBox(
+                                                                        //                         height:
+                                                                        //                             10),
+                                                                        //             itemCount: 3));
+                                                                        showBarModalBottomSheet(
+                                                                            backgroundColor: Colors
+                                                                                .white,
+                                                                            context:
+                                                                                context,
+                                                                            builder:
+                                                                                (context) {
+                                                                              return Container(
+                                                                                color: Colors.white,
+                                                                                child: SingleChildScrollView(
+                                                                                  child: Padding(
+                                                                                    padding: const EdgeInsets.only(left: 15.0, right: 15),
+                                                                                    child: Column(
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        SizedBox(
+                                                                                          height: 20,
+                                                                                        ),
+                                                                                        Text(
+                                                                                          "Share it with your doctor",
+                                                                                          style: TextStyle(fontSize: 23, color: Colors.blue, fontWeight: FontWeight.w500),
+                                                                                        ),
+                                                                                        SizedBox(
+                                                                                          height: 20,
+                                                                                        ),
+                                                                                        Padding(
+                                                                                          padding: const EdgeInsets.only(
+                                                                                            bottom: 22.0,
+                                                                                          ),
+                                                                                          child: userType == null
+                                                                                              ? Container()
+                                                                                              : Column(
+                                                                                                  children: [
+                                                                                                    StreamBuilder(
+                                                                                                        stream: Firestore.instance.collection("patient").document(widget.uid).collection("doctors_liked").snapshots(),
+                                                                                                        builder: (context, snap) {
+                                                                                                          return snap.data == null
+                                                                                                              ? Container()
+                                                                                                              : ListView.separated(
+                                                                                                                  physics: NeverScrollableScrollPhysics(),
+                                                                                                                  separatorBuilder: (ctx, i) {
+                                                                                                                    return SizedBox(height: 20);
+                                                                                                                  },
+                                                                                                                  itemCount: snap.data.documents.length,
+                                                                                                                  shrinkWrap: true,
+                                                                                                                  itemBuilder: (BuildContext context, int i) {
+                                                                                                                    var doctors = snap.data.documents[i].data;
+                                                                                                                    return Container(
+                                                                                                                        width: double.infinity,
+                                                                                                                        height: 100,
+                                                                                                                        decoration: BoxDecoration(
+                                                                                                                          // boxShadow: [
+                                                                                                                          //   BoxShadow(
+                                                                                                                          //     color: Colors.black.withOpacity(0.1),
+                                                                                                                          //     spreadRadius: 0.3,
+                                                                                                                          //     blurRadius: 10,
+                                                                                                                          //     offset: Offset(0, 3), // changes position of shadow
+                                                                                                                          //   ),
+                                                                                                                          // ],
+                                                                                                                          borderRadius: BorderRadius.circular(15),
+                                                                                                                          color: Colors.lightBlue.withOpacity(0.2),
+                                                                                                                        ),
+                                                                                                                        child: Padding(
+                                                                                                                          padding: const EdgeInsets.only(left: 8.0, right: 8),
+                                                                                                                          child: Center(
+                                                                                                                            child: Row(
+                                                                                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                                                              children: [
+                                                                                                                                Container(
+                                                                                                                                  width: 80,
+
+                                                                                                                                  height: 80,
+                                                                                                                                  decoration: BoxDecoration(
+                                                                                                                                    color: Colors.grey.withOpacity(0.2),
+                                                                                                                                    image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(doctors["profile_pic"])),
+                                                                                                                                    borderRadius: BorderRadius.circular(10),
+                                                                                                                                  ),
+                                                                                                                                  // child:
+                                                                                                                                  //   Image.network(name),
+                                                                                                                                ),
+                                                                                                                                SizedBox(width: 10),
+                                                                                                                                Column(
+                                                                                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                                                  children: [
+                                                                                                                                    SizedBox(height: 16),
+                                                                                                                                    Text(
+                                                                                                                                      doctors["name"],
+                                                                                                                                      style: TextStyle(fontSize: 21, color: Colors.blue),
+                                                                                                                                    ),
+                                                                                                                                    SizedBox(height: 5),
+                                                                                                                                    GestureDetector(
+                                                                                                                                      onTap: () async {
+                                                                                                                                        Firestore.instance.collection("doctor").document(doctors["doctor_uid"]).collection("recordings").add({
+                                                                                                                                          "age": age,
+                                                                                                                                          "date": data["date"],
+                                                                                                                                          "name_patient": name,
+                                                                                                                                          "phone": data["phone"],
+                                                                                                                                          "result": data["result"],
+                                                                                                                                          "profile_pic": profile_pic,
+                                                                                                                                          "order_Check":DateTime.now(),
+                                                                                                                                          "file_url": data["file_url"],
+                                                                                                                                        });
+                                                                                                                                        Navigator.pop(context);
+                                                                                                                                        //                                                                                                           var dio=Dio();
+                                                                                                                                        //                                                                                                           var send_messgae={"url":user["recordings"][index]["url"]}
+                                                                                                                                        //  await dio.post("https://flow-live.tech/user/send_recording",
+                                                                                                                                        //               data: FormData.fromMap(send_messgae));
+                                                                                                                                        showDialog(
+                                                                                                                                            context: context,
+                                                                                                                                            builder: (context) {
+                                                                                                                                              Future.delayed(Duration(seconds: 3), () {
+                                                                                                                                                Navigator.of(context).pop(true);
+                                                                                                                                              });
+                                                                                                                                              return Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: Colors.grey[900], child: Container(width: 200, height: 130, child: Lottie.asset("assets/tick.json", repeat: false)));
+                                                                                                                                            });
+                                                                                                                                      },
+                                                                                                                                      child: Container(
+                                                                                                                                          width: MediaQuery.of(context).size.width - 136,
+                                                                                                                                          height: 30,
+                                                                                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), gradient: LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent])),
+                                                                                                                                          child: Center(
+                                                                                                                                            child: Text(
+                                                                                                                                              "Send",
+                                                                                                                                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 17),
+                                                                                                                                            ),
+                                                                                                                                          )),
+                                                                                                                                    ),
+                                                                                                                                  ],
+                                                                                                                                )
+                                                                                                                              ],
+                                                                                                                            ),
+                                                                                                                          ),
+                                                                                                                        ));
+                                                                                                                  },
+                                                                                                                );
+                                                                                                        }),
+                                                                                                    SizedBox(height: 30),
+                                                                                                  ],
+                                                                                                ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            });
+                                                                      },
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .share,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        size:
+                                                                            20,
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )),
+                                            );
+                                          });
+                                }),
                   ),
                 ],
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (c) => CheckBeat(widget.uid,_localPath)));
-              },
-              child: new ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20)),
-                child: new BackdropFilter(
-                  filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                  child: new Container(
-                    padding: const EdgeInsets.only(
-                        left: 10, right: 10, top: 15, bottom: 15),
-                    height: 80,
-                    decoration: BoxDecoration(
+          userType == "doctor"
+              ? Container()
+              : Align(
+                  alignment: Alignment.bottomCenter,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (c) =>
+                                  CheckBeat(widget.uid, _localPath)));
+                    },
+                    child: new ClipRRect(
                       borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(100),
-                          topRight: Radius.circular(100)),
-                    ),
-                    width: double.infinity,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 10,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(
-                              colors: [Colors.blue, Colors.lightBlueAccent])),
-                      child: Center(
-                        child: Text(
-                          "Analayse Heartbeat",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
+                          topRight: Radius.circular(20),
+                          topLeft: Radius.circular(20)),
+                      child: new BackdropFilter(
+                        filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: new Container(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 15, bottom: 15),
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(100),
+                                topRight: Radius.circular(100)),
+                          ),
+                          width: double.infinity,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width - 10,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                gradient: LinearGradient(colors: [
+                                  Colors.blue,
+                                  Colors.lightBlueAccent
+                                ])),
+                            child: Center(
+                              child: Text(
+                                "Analayse Heartbeat",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
         ]),
       ),
     );
