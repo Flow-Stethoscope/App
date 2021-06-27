@@ -154,7 +154,7 @@ class _HomeState extends State<Home> {
                     Container(
                       width: MediaQuery.of(context).size.width - 85,
                       height: 80,
-                      child: StreamBuilder(
+                      child: userType==null?Container(): StreamBuilder(
                           stream: Firestore.instance
                               .collection("doctor")
                               .snapshots(),
@@ -208,7 +208,7 @@ class _HomeState extends State<Home> {
                   SizedBox(height: 20),
                   Container(
                     height: 475,
-                    child: StreamBuilder(
+                    child: userType==null?Container():StreamBuilder(
                         stream: Firestore.instance
                             .collection(userType)
                             .document(widget.uid)
@@ -362,7 +362,7 @@ class _HomeState extends State<Home> {
                                                                                   padding: const EdgeInsets.only(
                                                                                     bottom: 22.0,
                                                                                   ),
-                                                                                  child: StreamBuilder(
+                                                                                  child:userType==null?Container(): StreamBuilder(
                                                                                       stream: Firestore.instance.collection("patient").document(widget.uid).collection("doctors_liked").snapshots(),
                                                                                       builder: (context, snap) {
                                                                                         return snap.data == null
