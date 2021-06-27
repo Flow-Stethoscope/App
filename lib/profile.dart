@@ -54,7 +54,6 @@ class _ProfileState extends State<Profile> {
     getuserType();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,71 +68,117 @@ class _ProfileState extends State<Profile> {
               SizedBox(
                 height: 60,
               ),
-              Center(
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(profile_pic == null
-                                      ? "https://coolbackgrounds.io/images/backgrounds/white/pure-white-background-85a2a7fd.jpg"
-                                      : profile_pic),
-                                  fit: BoxFit.cover),
-                              borderRadius: BorderRadius.circular(
-                                (15),
-                              ))),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(),
-                      child: Container(
-                        width: 75,
-                        height: 45,
-                        decoration: BoxDecoration(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      width: 120,
+                      height: 140,
+                      decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.indigo,
-                          // boxShadow: [
-                          //   BoxShadow(
-                          //     color: Colors.white.withOpacity(0.5),
-                          //     spreadRadius: 10,
-                          //     blurRadius: 20,
-                          //     offset:
-                          //         Offset(0, 3), // changes position of shadow
-                          //   ),
-                          // ],
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 30,
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                  profile_pic == null ? "" : profile_pic)))),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width:214,
+                        child: Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Text(name == null ? "" : name,
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500)),
+                          ),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "$age years old",
+                          style: TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(name == null ? "" : name,
-                  // "Dhanush",
-                  style: GoogleFonts.poppins(
-                      fontSize: 27,
-                      height: 1.5,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500)),
-              SizedBox(height: 0),
+              SizedBox(height:20),
+              // Center(
+              //   child: Stack(
+              //     alignment: Alignment.bottomCenter,
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.only(bottom: 20.0),
+              //         child: Container(
+              //             width: 150,
+              //             height: 150,
+              //             decoration: BoxDecoration(
+              //                 image: DecorationImage(
+              //                     image: NetworkImage(profile_pic == null
+              //                         ? "https://coolbackgrounds.io/images/backgrounds/white/pure-white-background-85a2a7fd.jpg"
+              //                         : profile_pic),
+              //                     fit: BoxFit.cover),
+              //                 borderRadius: BorderRadius.circular(
+              //                   (15),
+              //                 ))),
+              //       ),
+              //       Padding(
+              //         padding: EdgeInsets.only(),
+              //         child: Container(
+              //           width: 75,
+              //           height: 45,
+              //           decoration: BoxDecoration(
+              //             borderRadius: BorderRadius.circular(10),
+              //             color: Colors.indigo,
+              //             // boxShadow: [
+              //             //   BoxShadow(
+              //             //     color: Colors.white.withOpacity(0.5),
+              //             //     spreadRadius: 10,
+              //             //     blurRadius: 20,
+              //             //     offset:
+              //             //         Offset(0, 3), // changes position of shadow
+              //             //   ),
+              //             // ],
+              //           ),
+              //           child: Icon(
+              //             Icons.edit,
+              //             color: Colors.white,
+              //             size: 30,
+              //           ),
+              //         ),
+              //       )
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Text(name == null ? "" : name,
+              //     // "Dhanush",
+              //     style: GoogleFonts.poppins(
+              //         fontSize: 27,
+              //         height: 1.5,
+              //         color: Colors.blue,
+              //         fontWeight: FontWeight.w500)),
+              // SizedBox(height: 0),
+              // Text(
+              //   age == null ? "" : "$age years",
+              //   style: GoogleFonts.poppins(fontSize: 17, color: Colors.grey),
+              // ),
+              // SizedBox(height: 30),
               Text(
-                age == null ? "" : "$age years",
-                style: GoogleFonts.poppins(fontSize: 17, color: Colors.grey),
-              ),
-              SizedBox(height: 30),
-              Text(
-             userType=="doctor"?"":   "Your Doctors",
+                userType == "doctor" ? "" : "Your Doctors",
                 style: GoogleFonts.poppins(
                     // height:0,
                     fontSize: 25,

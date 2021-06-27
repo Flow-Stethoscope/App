@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
+import 'package:teen_hacks/bezier_Container.dart';
 import 'package:teen_hacks/home.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -30,26 +31,28 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: Color(4278656558),
+          color: Colors.white70,
         ),
         child: SingleChildScrollView(
           child: Stack(
             children: [
-              Align(
-                  alignment: Alignment.topRight,
-                  child:
-                      Image.asset("assets/blob.png", height: 220, width: 220)),
+              Positioned(
+                  top: -height * .15,
+                  right: -MediaQuery.of(context).size.width * .4,
+                  child: BezierContainer()),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                      padding: const EdgeInsets.only(top: 200, left: 20),
+                      padding: const EdgeInsets.only(top: 150, left: 20),
                       child:
                           // Text('Login',
                           //     style: GoogleFonts.poppins(
@@ -85,7 +88,7 @@ class _SignupState extends State<Signup> {
                             'Name',
                             textAlign: TextAlign.start,
                             style: GoogleFonts.poppins(
-                                color: Color(4288914861), fontSize: 18),
+                                color: Colors.blue, fontSize: 18),
                           ),
                         ),
                         SizedBox(
@@ -93,7 +96,7 @@ class _SignupState extends State<Signup> {
                         ),
                         Material(
                           borderRadius: BorderRadius.circular(10.0),
-                          elevation: 2,
+                          elevation: 0,
                           color: Colors.white,
                           child: Container(
                             decoration: BoxDecoration(
@@ -107,20 +110,25 @@ class _SignupState extends State<Signup> {
                               //   ),
                               // ],
                             ),
-                            child: TextFormField(
-                                controller: _name,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  contentPadding: EdgeInsets.only(top: 14.0),
-                                  prefixIcon: Icon(
-                                    Icons.person_outline,
-                                    color: Color(4288914861),
-                                  ),
-                                )),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: TextFormField(
+                                  controller: _name,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    filled: true,
+                                    fillColor: Colors.grey.withOpacity(0.25),
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.only(top: 14.0),
+                                    prefixIcon: Icon(
+                                      Icons.person_outline,
+                                      color: Colors.blue,
+                                    ),
+                                  )),
+                            ),
                           ),
                         ),
                         SizedBox(
@@ -131,31 +139,36 @@ class _SignupState extends State<Signup> {
                             child: Text(
                               'Email',
                               style: GoogleFonts.poppins(
-                                  color: Color(4288914861), fontSize: 18),
+                                  color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
                         ),
                         Material(
-                          elevation: 3,
+                          elevation: 0,
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: TextFormField(
-                              controller: _username,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.email_outlined,
-                                  color: Color(4288914861),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: TextFormField(
+                                controller: _username,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  fillColor: Colors.grey.withOpacity(0.25),
+                                  filled: true,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14.0),
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
                             ),
@@ -169,34 +182,39 @@ class _SignupState extends State<Signup> {
                             child: Text(
                               'Password',
                               style: GoogleFonts.poppins(
-                                  color: Color(4288914861), fontSize: 18),
+                                  color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
                         ),
                         Material(
-                          elevation: 3,
+                          elevation: 0,
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: TextFormField(
-                              controller: _password,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.lock_outline,
-                                  color: Color(4288914861),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: TextFormField(
+                                controller: _password,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  fillColor: Colors.grey.withOpacity(0.25),
+                                  filled: true,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14.0),
+                                  prefixIcon: Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.blue,
+                                  ),
                                 ),
+                                obscureText: true,
                               ),
-                              obscureText: true,
                             ),
                           ),
                         ),
@@ -208,31 +226,36 @@ class _SignupState extends State<Signup> {
                             child: Text(
                               'Age',
                               style: GoogleFonts.poppins(
-                                  color: Color(4288914861), fontSize: 18),
+                                  color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
                         ),
                         Material(
-                          elevation: 3,
+                          elevation: 0,
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: TextFormField(
-                              controller: _age,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.date_range_outlined,
-                                  color: Color(4288914861),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: TextFormField(
+                                controller: _age,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  fillColor: Colors.grey.withOpacity(0.25),
+                                  filled: true,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14.0),
+                                  prefixIcon: Icon(
+                                    Icons.date_range_outlined,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
                             ),
@@ -246,31 +269,36 @@ class _SignupState extends State<Signup> {
                             child: Text(
                               'User Type',
                               style: GoogleFonts.poppins(
-                                  color: Color(4288914861), fontSize: 18),
+                                  color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
                         ),
                         Material(
-                          elevation: 3,
+                          elevation: 0,
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: TextFormField(
-                              controller: _userType,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.person_pin,
-                                  color: Color(4288914861),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: TextFormField(
+                                controller: _userType,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  fillColor: Colors.grey.withOpacity(0.25),
+                                  filled: true,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14.0),
+                                  prefixIcon: Icon(
+                                    Icons.person_pin,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
                             ),
@@ -284,31 +312,36 @@ class _SignupState extends State<Signup> {
                             child: Text(
                               'Phone Number',
                               style: GoogleFonts.poppins(
-                                  color: Color(4288914861), fontSize: 18),
+                                  color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
                         ),
                         Material(
-                          elevation: 3,
+                          elevation: 0,
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: TextFormField(
-                              controller: _phone,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.phone,
-                                  color: Color(4288914861),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: TextFormField(
+                                controller: _phone,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  fillColor: Colors.grey.withOpacity(0.25),
+                                  filled: true,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14.0),
+                                  prefixIcon: Icon(
+                                    Icons.phone,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
                             ),
@@ -321,8 +354,8 @@ class _SignupState extends State<Signup> {
                             alignment: Alignment.bottomLeft,
                             child: Text(
                               'Profile Photo',
-                              style: TextStyle(
-                                  color: Color(4288914861), fontSize: 18),
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 18),
                             )),
                         SizedBox(
                           height: 5,
@@ -344,11 +377,11 @@ class _SignupState extends State<Signup> {
                               height: 150,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white),
+                                  color: Colors.grey.withOpacity(0.3)),
                               child: image == null
                                   ? Icon(
                                       Icons.upload_file,
-                                      color: Colors.grey,
+                                      color: Colors.blue.withOpacity(0.8),
                                       size: 100,
                                     )
                                   : Container(
@@ -421,35 +454,31 @@ class _SignupState extends State<Signup> {
                               });
                             },
                             child: Container(
-                              height: 50,
-                              width: 180,
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'SignUp ',
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_rounded,
-                                        color: Colors.white,
-                                      )
-                                    ],
-                                  )),
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  gradient: LinearGradient(colors: [
-                                    Colors.blue,
-                                    Colors.lightBlueAccent
-                                  ])),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                        color: Colors.grey.shade200,
+                                        offset: Offset(2, 4),
+                                        blurRadius: 5,
+                                        spreadRadius: 2)
+                                  ],
+                                  gradient: LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        Colors.blue,
+                                        Colors.lightBlueAccent
+                                      ])),
+                              child: Text('SignUp',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20,
+                                      color: Colors.white)),
                             ),
                           ),
                         ),

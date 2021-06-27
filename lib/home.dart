@@ -111,22 +111,108 @@ class _HomeState extends State<Home> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (ctx) => Profile(widget.uid)));
+                          userType == "doctor"
+                              ? showBarModalBottomSheet(
+                                  backgroundColor: Colors.white,
+                                  context: context,
+                                  builder: (cx) {
+                                    return Container(
+                                      height:200,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8),
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Container(
+                                                    width: 120,
+                                                    height: 140,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                10),
+                                                        image: DecorationImage(
+                                                            fit: BoxFit.cover,
+                                                            image: NetworkImage(
+                                                                profile_pic ==
+                                                                        null
+                                                                    ? ""
+                                                                    : profile_pic)))),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width: 214,
+                                                      child: Expanded(
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          child: Text(
+                                                              name == null
+                                                                  ? ""
+                                                                  : name,
+                                                              style: TextStyle(
+                                                                  fontSize: 25,
+                                                                  color:
+                                                                      Colors.blue,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Align(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      child: Text(
+                                                        "$age years old",
+                                                        style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: Colors.grey),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(height: 20),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  })
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) => Profile(widget.uid)));
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Container(
-                              width: 59,
-                              height: 59,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                      image: NetworkImage(profile_pic==null?"":profile_pic),)))
-                        ),
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: Container(
+                                width: 59,
+                                height: 59,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(profile_pic == null
+                                          ? ""
+                                          : profile_pic),
+                                    )))),
                       )
                     ]),
                 SizedBox(height: 10),
@@ -375,7 +461,9 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: MediaQuery.of(context).size.height - 250,
+              height: userType == "doctor"
+                  ? MediaQuery.of(context).size.height - 180
+                  : MediaQuery.of(context).size.height - 220,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -397,129 +485,131 @@ class _HomeState extends State<Home> {
                                 stream: Firestore.instance
                                     .collection(userType)
                                     .document(widget.uid)
-                                    .collection("recordings").orderBy("order_Check",descending:true)
+                                    .collection("recordings")
+                                    .orderBy("order_Check", descending: true)
                                     .snapshots(),
                                 builder: (ctx, snap) {
-                                  return ListView.separated(
-                                  
-                                    
-                                      itemCount: snap.data.documents.length,
-                                      shrinkWrap: true,
-                                      separatorBuilder: (ctx, i) {
-                                        return SizedBox(height: 10);
-                                      },
-                                      itemBuilder: (context, i) {
-                                        var data = snap.data.documents[i].data;
+                                  return snap.data == null
+                                      ? Container()
+                                      : ListView.separated(
+                                          itemCount: snap.data.documents.length,
+                                          shrinkWrap: true,
+                                          separatorBuilder: (ctx, i) {
+                                            return SizedBox(height: 10);
+                                          },
+                                          itemBuilder: (context, i) {
+                                            var data =
+                                                snap.data.documents[i].data;
 
-                                        return Container(
-                                            width: double.infinity,
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                              // boxShadow: [
-                                              //   BoxShadow(
-                                              //     color: Colors.black.withOpacity(0.1),
-                                              //     spreadRadius: 0.7,
-                                              //     blurRadius: 20,
-                                              //     offset: Offset(
-                                              //         0, 3), // changes position of shadow
-                                              //   ),
-                                              // ],
-                                              color: Colors.lightBlue
-                                                  .withOpacity(0.2),
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0, right: 8),
-                                              child: Center(
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                      width: 75,
-
-                                                      height: 75,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.grey
-                                                            .withOpacity(0.2),
-                                                        image: DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image: NetworkImage(
-                                                                data[
-                                                                    "profile_pic"])),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      // child:
-                                                      //   Image.network(name),
-                                                    ),
-                                                    SizedBox(width: 5),
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
+                                            return Container(
+                                                width: double.infinity,
+                                                height: 100,
+                                                decoration: BoxDecoration(
+                                                  // boxShadow: [
+                                                  //   BoxShadow(
+                                                  //     color: Colors.black.withOpacity(0.1),
+                                                  //     spreadRadius: 0.7,
+                                                  //     blurRadius: 20,
+                                                  //     offset: Offset(
+                                                  //         0, 3), // changes position of shadow
+                                                  //   ),
+                                                  // ],
+                                                  color: Colors.lightBlue
+                                                      .withOpacity(0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0, right: 8),
+                                                  child: Center(
+                                                    child: Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
-                                                              .start,
+                                                              .center,
                                                       children: [
-                                                        SizedBox(height: 16),
                                                         Container(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              116,
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Container(
-                                                                width:180,
-                                                                child: Expanded(
-                                                                  child: SingleChildScrollView(
-                                                                                    scrollDirection: Axis.horizontal,
-                                                                    child:  Text(
-                                                                        data[
-                                                                            "name_patient"],
-                                                                        style: GoogleFonts
-                                                                            .poppins(
-                                                                                fontSize:
-                                                                                    21,
-                                                                                color: Colors.blue),
+                                                          width: 75,
+
+                                                          height: 75,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.grey
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            image: DecorationImage(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                image: NetworkImage(
+                                                                    data[
+                                                                        "profile_pic"])),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                          ),
+                                                          // child:
+                                                          //   Image.network(name),
+                                                        ),
+                                                        SizedBox(width: 5),
+                                                        Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 16),
+                                                            Container(
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width -
+                                                                  116,
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Container(
+                                                                    width: 180,
+                                                                    child:
+                                                                        Expanded(
+                                                                      child:
+                                                                          SingleChildScrollView(
+                                                                        scrollDirection:
+                                                                            Axis.horizontal,
+                                                                        child:
+                                                                            Text(
+                                                                          data[
+                                                                              "name_patient"],
+                                                                          style: GoogleFonts.poppins(
+                                                                              fontSize: 21,
+                                                                              color: Colors.blue),
+                                                                        ),
                                                                       ),
-                                                                    
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap:
-                                                                    () async {
-                                                                  AudioPlayer
-                                                                      audioPlayer =
-                                                                      AudioPlayer();
-                                                                  await audioPlayer.play(
-                                                                      data[
-                                                                          "file_url"],
-                                                                      isLocal:
-                                                                          true);
-                                                                },
-                                                                child:
-                                                                    Container(
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .center,
-                                                                        width:
-                                                                            30,
-                                                                        height:
-                                                                            30,
-                                                                        decoration: BoxDecoration(
-                                                                            shape:
-                                                                                BoxShape.circle,
-                                                                            border: Border.all(color: Colors.blue)),
+                                                                  GestureDetector(
+                                                                    onTap:
+                                                                        () async {
+                                                                      AudioPlayer
+                                                                          audioPlayer =
+                                                                          AudioPlayer();
+                                                                      await audioPlayer.play(
+                                                                          data[
+                                                                              "file_url"],
+                                                                          isLocal:
+                                                                              true);
+                                                                    },
+                                                                    child: Container(
+                                                                        alignment: Alignment.center,
+                                                                        width: 30,
+                                                                        height: 30,
+                                                                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.blue)),
                                                                         child: Center(
                                                                           child:
                                                                               Icon(
@@ -530,72 +620,71 @@ class _HomeState extends State<Home> {
                                                                                 Colors.blue,
                                                                           ),
                                                                         )),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 4),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                launch(
-                                                                    "tel://${data["phone"]}");
-                                                              },
-                                                              child: Container(
-                                                                  width: 160,
-                                                                  height: 29,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(6),
-                                                                    color: Colors
-                                                                        .blue,
                                                                   ),
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      "Call Patient",
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontSize:
-                                                                              13),
-                                                                    ),
-                                                                  )),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 17,
-                                                            ),
-                                                            Text(
-                                                              data["result"],
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: data["result"] ==
-                                                                        "Normal"
-                                                                    ? Colors
-                                                                        .green
-                                                                    : Colors
-                                                                        .red,
+                                                                ],
                                                               ),
+                                                            ),
+                                                            SizedBox(height: 4),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    launch(
+                                                                        "tel://${data["phone"]}");
+                                                                  },
+                                                                  child: Container(
+                                                                      width: 160,
+                                                                      height: 29,
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(6),
+                                                                        color: Colors
+                                                                            .blue,
+                                                                      ),
+                                                                      child: Center(
+                                                                        child:
+                                                                            Text(
+                                                                          "Call Patient",
+                                                                          style: TextStyle(
+                                                                              fontWeight: FontWeight.w500,
+                                                                              color: Colors.white,
+                                                                              fontSize: 13),
+                                                                        ),
+                                                                      )),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 17,
+                                                                ),
+                                                                Text(
+                                                                  data[
+                                                                      "result"],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: data["result"] ==
+                                                                            "Normal"
+                                                                        ? Colors
+                                                                            .green
+                                                                        : Colors
+                                                                            .red,
+                                                                  ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
-                                                        ),
+                                                        )
                                                       ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ));
-                                      });
+                                                    ),
+                                                  ),
+                                                ));
+                                          });
                                 }),
                           )
                         : userType == null
@@ -604,7 +693,8 @@ class _HomeState extends State<Home> {
                                 stream: Firestore.instance
                                     .collection(userType)
                                     .document(widget.uid)
-                                    .collection("recordings").orderBy("order_Check",descending: true)
+                                    .collection("recordings")
+                                    .orderBy("order_Check", descending: true)
                                     .snapshots(),
                                 builder: (context, snapshot) {
                                   return snapshot.data == null
@@ -839,7 +929,7 @@ class _HomeState extends State<Home> {
                                                                                                                                           "phone": data["phone"],
                                                                                                                                           "result": data["result"],
                                                                                                                                           "profile_pic": profile_pic,
-                                                                                                                                          "order_Check":DateTime.now(),
+                                                                                                                                          "order_Check": DateTime.now(),
                                                                                                                                           "file_url": data["file_url"],
                                                                                                                                         });
                                                                                                                                         Navigator.pop(context);

@@ -15,10 +15,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final textTheme = Theme.of(context).textTheme;
+
     return MaterialApp(
        debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
+ textTheme:GoogleFonts.latoTextTheme(textTheme).copyWith(
+           bodyText1: GoogleFonts.montserrat(textStyle: textTheme.bodyText1),
+         ),
       ),
       home: Login(),
     );
