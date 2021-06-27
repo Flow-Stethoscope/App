@@ -150,7 +150,7 @@ class _HomeState extends State<Home> {
                           color: Colors.white.withOpacity(0.3),
                         ),
                         child: Icon(Icons.search, color: Colors.white)),
-                    SizedBox(width: 10),
+                    SizedBox(width: 0),
                     Container(
                       width: MediaQuery.of(context).size.width - 85,
                       height: 80,
