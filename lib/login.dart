@@ -9,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:teen_hacks/home.dart';
 import 'package:teen_hacks/signinup.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());

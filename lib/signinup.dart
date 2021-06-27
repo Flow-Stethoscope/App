@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:teen_hacks/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -25,7 +24,7 @@ class _SignupState extends State<Signup> {
   TextEditingController _userType = TextEditingController();
 
   FirebaseAuth auth = FirebaseAuth.instance;
-  final picker = ImagePicker();
+  ImagePicker picker = ImagePicker();
   File image;
 
   @override
@@ -291,13 +290,12 @@ class _SignupState extends State<Signup> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            final pickedimage = await picker.getImage(
-                                source: ImageSource.gallery);
-
-                            if (pickedimage != null) {
+                            final pickedFile = await ImagePicker.pickImage(
+                                source: ImageSource.camera);
+                            if (pickedFile != null) {
                               setState(() {
                                 image = File(
-                                  pickedimage.path,
+                                  pickedFile.path,
                                 );
                               });
                             }

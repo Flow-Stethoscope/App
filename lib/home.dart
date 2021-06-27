@@ -15,7 +15,7 @@ import 'dart:ui';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:teen_hacks/profile.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file/local.dart';
 
 class Home extends StatefulWidget {
   String uid;
@@ -150,9 +150,9 @@ class _HomeState extends State<Home> {
                           color: Colors.white.withOpacity(0.3),
                         ),
                         child: Icon(Icons.search, color: Colors.white)),
-                        SizedBox(width:10),
+                    SizedBox(width: 10),
                     Container(
-                      width: MediaQuery.of(context).size.width-85,
+                      width: MediaQuery.of(context).size.width - 85,
                       height: 80,
                       child: StreamBuilder(
                           stream: Firestore.instance
@@ -493,7 +493,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (c) => CheckBeat(widget.uid)));
+                    MaterialPageRoute(builder: (c) => CheckBeat(widget.uid,_localPath)));
               },
               child: new ClipRRect(
                 borderRadius: BorderRadius.only(
@@ -537,4 +537,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  LocalFileSystem _localPath;
 }

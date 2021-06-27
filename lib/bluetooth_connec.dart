@@ -5,6 +5,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:teen_hacks/BluetoothDeviceListEntry.dart';
 import 'package:teen_hacks/check_beat.dart';
 import 'package:teen_hacks/detail.dart';
+import 'package:file/local.dart';
 
 class BluetoothHome extends StatefulWidget {
   @override
@@ -132,7 +133,9 @@ class _BluetoothHomeState extends State<BluetoothHome>
 
   void _startCameraConnect(BuildContext context, BluetoothDevice server) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return CheckBeat("ddwdwdw");
+      return CheckBeat("ddwdwdw", dw);
     }));
   }
+
+  LocalFileSystem dw;
 }

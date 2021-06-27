@@ -32,12 +32,10 @@ dependencies:
   google_fonts:
   lottie:
   modal_bottom_sheet: ^2.0.0
-  shared_preferences: ^2.0.6
   fade:
   syncfusion_flutter_charts:
   flutter_svprogresshud:
   slide_popup_dialog:
-  path_provider: ^2.0.2
   easy_gradient_text: ^1.0.0
   firebase_storage: ^3.1.6
   http:
@@ -46,7 +44,9 @@ dependencies:
   jitsi_meet: ^4.0.0
   bottom_navy_bar:
   dot_navigation_bar:
-  image_picker: ^0.7.4
+  image_picker:
+  flutter_audio_recorder: ^0.5.5
+  audioplayers: ^0.16.1
 
 dev_dependencies:
   flutter_test:
